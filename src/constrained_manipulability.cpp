@@ -17,6 +17,8 @@ ConstrainedManipulability::ConstrainedManipulability ( ros::NodeHandle nh,
             ( "/visualization_marker",1 );
     poly_mesh_pub=nh_.advertise<constrained_manipulability::PolytopeMesh>
                     ( "constrained_manipulability/polytope_mesh",1 );
+    viz_mesh_pub=nh_.advertise<mesh_msgs::MeshGeometryStamped>
+                    ( "constrained_manipulability/mesh_geometry",1 );
 
     std::string robot_desc_string;
     nh_.param ( robot_description, robot_desc_string, std::string() );
@@ -178,6 +180,12 @@ bool ConstrainedManipulability::plotPolytope  ( std::string polytope_name,
         mkr.type=visualization_msgs::Marker::TRIANGLE_LIST;
         mkr.header.frame_id=frame;
 
+        mesh_msgs::MeshGeometryStamped viz_mesh;
+        viz_mesh.header = mkr.header;
+        viz_mesh.uuid = polytope_name;
+        viz_mesh.mesh_geometry.faces.resize(polygons.size());
+        viz_mesh.mesh_geometry.vertices.resize(polygons.size()*3);
+
         // polygons is a vector of triangles represented by 3 indices
         // The indices correspond to points in cloud_hull
         // Therefore for each triangle in the polgyon
@@ -195,6 +203,9 @@ bool ConstrainedManipulability::plotPolytope  ( std::string polytope_name,
 
                 poly_mesh.mesh.triangles[tri].vertex_indices[var] = triangle.vertices[var];                
                 poly_mesh.mesh.vertices[triangle.vertices[var]]=pp;
+
+                viz_mesh.mesh_geometry.faces[tri].vertex_indices[var] = triangle.vertices[var];
+                viz_mesh.mesh_geometry.vertices[triangle.vertices[var]] = pp;
             }
         }
 
@@ -218,6 +229,7 @@ bool ConstrainedManipulability::plotPolytope  ( std::string polytope_name,
         mkr_pub.publish ( mkr );
 
         poly_mesh_pub.publish ( poly_mesh );
+        viz_mesh_pub.publish ( viz_mesh );
 
         mkr.type=visualization_msgs::Marker::SPHERE_LIST;
         mkr.header.frame_id=frame;

@@ -26,6 +26,7 @@
 #include "sensor_msgs/JointState.h"
 #include "geometry_msgs/TransformStamped.h"
 #include <geometry_msgs/Pose.h>
+#include <mesh_msgs/MeshGeometryStamped.h>
 
 #include <geometric_shapes/shapes.h>
 #include <geometric_shapes/shape_operations.h>
@@ -76,7 +77,8 @@ private:
     /// RVIZ DISPLAY
     ros::Publisher mkr_pub;
     ros::Publisher poly_mesh_pub;
-   
+    ros::Publisher viz_mesh_pub;
+
     /** Plot a Polytope defined a a set of vertices
     *   The vertices are shifted to the offset position (offset_position), for instance the robot end effector
     *   std::string frame, to define the frame of reference.
