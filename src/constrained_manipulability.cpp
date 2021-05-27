@@ -29,6 +29,7 @@ ConstrainedManipulability::ConstrainedManipulability ( ros::NodeHandle nh,
 
 
     base_link_=root;
+    ef_link_=tip;
     my_tree_.getChain ( root,
                         tip,
                         chain_ );
@@ -178,6 +179,21 @@ bool ConstrainedManipulability::plotPolytope  ( std::string polytope_name,
         mkr.type=visualization_msgs::Marker::TRIANGLE_LIST;
         mkr.header.frame_id=frame;
 
+        tf2_ros::Buffer tfBuffer;
+        tf2_ros::TransformListener tf(tfBuffer);
+
+        geometry_msgs::TransformStamped transform;
+        try{
+            transform = tfBuffer.lookupTransform(ef_link_, base_link_, ros::Time(0), ros::Duration(3));
+        }
+        catch (tf2::TransformException &ex) {
+            ROS_ERROR("Error during transform: %s", ex.what());
+        }
+
+        geometry_msgs::PointStamped ef_point;
+        geometry_msgs::PointStamped base_point;
+
+      // Transform base point to ef point
         // polygons is a vector of triangles represented by 3 indices
         // The indices correspond to points in cloud_hull
         // Therefore for each triangle in the polgyon
@@ -193,8 +209,10 @@ bool ConstrainedManipulability::plotPolytope  ( std::string polytope_name,
                 pp.z=cloud_hull->points[triangle.vertices[var]].z;
                 points.push_back ( pp );
 
+                base_point.point = pp;
+                tf2::doTransform(base_point, ef_point, transform);
                 poly_mesh.mesh.triangles[tri].vertex_indices[var] = triangle.vertices[var];                
-                poly_mesh.mesh.vertices[triangle.vertices[var]]=pp;
+                poly_mesh.mesh.vertices[triangle.vertices[var]] = ef_point.point;
             }
         }
 

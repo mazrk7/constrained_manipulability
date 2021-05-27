@@ -27,6 +27,10 @@
 #include "geometry_msgs/TransformStamped.h"
 #include <geometry_msgs/Pose.h>
 
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
 #include <geometric_shapes/shapes.h>
 #include <geometric_shapes/shape_operations.h>
 #include <geometric_shapes/mesh_operations.h>
@@ -73,6 +77,7 @@ private:
     /// number of degrees of freedom
     unsigned int ndof_;
     ros::NodeHandle nh_;
+
     /// RVIZ DISPLAY
     ros::Publisher mkr_pub;
     ros::Publisher poly_mesh_pub;
@@ -104,6 +109,9 @@ private:
 
     /// Robot base link
     std::string base_link_;
+    /// EF link
+    std::string ef_link_;
+
     /// Distance threshold beyond which objects are ignored
     double distance_threshold_;
     /// Joint and linearization limits
