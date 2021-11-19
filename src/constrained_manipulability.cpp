@@ -14,6 +14,8 @@ ConstrainedManipulability::ConstrainedManipulability(ros::NodeHandle nh,
     mkr_pub = nh_.advertise<visualization_msgs::Marker>("/visualization_marker", 1);
     poly_mesh_pub = nh_.advertise<constrained_manipulability::PolytopeMesh>("constrained_manipulability/polytope_mesh", 1);
     viz_mesh_pub = nh_.advertise<mesh_msgs::MeshGeometryStamped>("constrained_manipulability/mesh_geometry", 1);
+    obj_dist_pub = nh_.advertise<constrained_manipulability::ObjectDistances>("constrained_manipulability/obj_distances", 1);
+
     std::string robot_desc_string;
     nh_.param(robot_description, robot_desc_string, std::string());
     model_.initParamWithNodeHandle(robot_description, nh);
@@ -1029,11 +1031,16 @@ bool ConstrainedManipulability::getPolytopeHyperPlanes(
         }
     }
 
+    constrained_manipulability::ObjectDistances dist_arr;
     for (int var = 0; var < J_constraints.size(); ++var)
     {
         AHrep.row(offset * ndof_ + var) = J_constraints[var];
         bhrep(offset * ndof_ + var) = distances[var]; // Small tolerance to stop passing through
+        dist_arr.distances.push_back(distances[var]);
     }
+
+    dist_arr.stamp = ros::Time::now();
+    obj_dist_pub.publish(dist_arr);
 
     return true;
 }
