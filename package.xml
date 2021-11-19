@@ -25,7 +25,8 @@
   <build_depend>robot_collision_checking</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
-
+  <depend>mesh_msgs</depend>
+  
   <build_export_depend>eigen_conversions</build_export_depend>
   <build_export_depend>geometric_shapes</build_export_depend>
   <build_export_depend>kdl_parser</build_export_depend>
