@@ -25,15 +25,17 @@
   <build_depend>robot_collision_checking</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
-  <depend>mesh_msgs</depend>
-  
+  <build_depend>mesh_msgs</build_depend>
+  <build_depend>mesh_tools</build_depend>
+
   <build_export_depend>eigen_conversions</build_export_depend>
   <build_export_depend>geometric_shapes</build_export_depend>
   <build_export_depend>kdl_parser</build_export_depend>
   <build_export_depend>pcl_ros</build_export_depend>
   <build_export_depend>robot_collision_checking</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
-  <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>mesh_msgs</build_export_depend>
+  <build_export_depend>mesh_tools</build_export_depend>
 
   <exec_depend>eigen_conversions</exec_depend>
   <exec_depend>geometric_shapes</exec_depend>
@@ -41,7 +43,8 @@
   <exec_depend>pcl_ros</exec_depend>
   <exec_depend>robot_collision_checking</exec_depend>
   <exec_depend>roscpp</exec_depend>
-  <exec_depend>rospy</exec_depend>
+  <exec_depend>mesh_msgs</exec_depend>
+  <exec_depend>mesh_tools</exec_depend>
 
   <build_depend>message_generation</build_depend>
   <exec_depend>message_runtime</exec_depend>
