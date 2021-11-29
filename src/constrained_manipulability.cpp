@@ -790,6 +790,7 @@ double ConstrainedManipulability::getConstrainedAllowableMotionPolytope(const se
 
     jointStatetoKDLJointArray(joint_states, kdl_joint_positions);
     getCollisionModel(kdl_joint_positions, geometry_information);
+
     bool collision_free = getPolytopeHyperPlanes(kdl_joint_positions,
                                                  geometry_information,
                                                  AHrep,
@@ -1098,7 +1099,7 @@ bool ConstrainedManipulability::displayCollisionModel(sensor_msgs::JointState co
     KDL::JntArray kdl_joint_positions(ndof_);
     jointStatetoKDLJointArray(joint_state, kdl_joint_positions);
     GeometryInformation geometry_information;
-    //     // Collision Link transforms
+    // Collision Link transforms
     getCollisionModel(kdl_joint_positions, geometry_information);
     for (int i = 0; i < geometry_information.geometry_transforms.size(); ++i)
     {
@@ -1117,8 +1118,8 @@ bool ConstrainedManipulability::getCollisionModel(const KDL::JntArray &kdl_joint
     Eigen::Affine3d link_origin_T_collision_origin, base_T_link_origin, base_T_collision_origin;
 
     // Calculates the segement's collision geomtery
-    //  The transform to the origin of the collision geometry
-    //  The Jacobian matrix at the origin of the collision geometry
+    // The transform to the origin of the collision geometry
+    // The Jacobian matrix at the origin of the collision geometry
     for (int i = 0; i < chain_.getNrOfSegments(); ++i)
     {
         KDL::Segment seg = chain_.getSegment(i); // Get current segment
@@ -1140,7 +1141,6 @@ bool ConstrainedManipulability::getCollisionModel(const KDL::JntArray &kdl_joint
         link_origin_T_collision_origin.linear() = origin_Quat_collision.toRotationMatrix();
 
         // Finds cartesian pose w.r.t to base frame
-
         Eigen::Matrix<double, 6, Eigen::Dynamic> base_J_collision_origin, base_J_link_origin;
         getKDLKinematicInformation(kdl_joint_positions, base_T_link_origin, base_J_link_origin, i + 1);
         base_T_collision_origin = base_T_link_origin * link_origin_T_collision_origin;
@@ -1197,6 +1197,7 @@ bool ConstrainedManipulability::getVrepPolytope(const Eigen::MatrixXd &A_left,
         Poly.setHrep(A_left, b_left);
         auto vrep = Poly.vrep();
         reduced_joint_vertex_set = vrep.first;
+
         if (reduced_joint_vertex_set.rows() <= 0)
         {
             // ROS_ERROR ( "V representation error no rows" );
@@ -1636,7 +1637,6 @@ bool ConstrainedManipulability::getCollisionModel(KDL::Chain &chain,
     {
         KDL::Segment seg = chain.getSegment(i); // Get current segment
 
-        // Get Collision Geometry
         // Get Collision Geometry
         std::unique_ptr<shapes::Shape> shape = constructShape(model.links_.at(seg.getName())->collision->geometry.get());
 

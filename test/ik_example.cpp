@@ -16,11 +16,12 @@ bool joint_state_received(false);
 bool twist_received(false);
 bool ignore_constraints(false);
 
+const int ndof = 7; // DoFs of robot manipulator
 std::vector<double> q_reference_g;                        // reference joint position
 Eigen::MatrixXd AHrep_g;                                  // Hyperplane constraints
-Eigen::VectorXd bHrep_g, shift_to_sampled_joint_state(6); // Hyperplane constraints
+Eigen::VectorXd bHrep_g, shift_to_sampled_joint_state(ndof); // Hyperplane constraints
 Eigen::VectorXd desired_twist_g(6);
-Eigen::Matrix<double, 6, 6> Jacobian_g; // Global Jacobian
+Eigen::Matrix<double, 6, ndof> Jacobian_g; // Global Jacobian
 
 void calculateDeviationAbs(int *Status, int *n, double x[],
                            int *needF, int *neF, double F[],
@@ -135,8 +136,12 @@ int main(int argc, char **argv)
     ROS_WARN_COND(ignore_constraints, "Ignoring Constraints");
 
     sensor_msgs::JointState pub_joint_state;
-    pub_joint_state.name = {"shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint"};
-    pub_joint_state.position = {0.23963403701782227, -1.789999624291891, 2.0054824987994593, -3.266478200952047, -2.01309043565859, -0.18095523515810186};
+    /*pub_joint_state.name = {"shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint"};
+    pub_joint_state.position = {0.23963403701782227, -1.789999624291891, 2.0054824987994593, -3.266478200952047, -2.01309043565859, -0.18095523515810186};*/
+    pub_joint_state.name = {"joint_1", "joint_2", "joint_3", "joint_4", "joint_5", "joint_6", "joint_7",
+                            "finger_joint", "left_inner_knuckle_joint", "left_inner_finger_joint", 
+                            "right_outer_knuckle_joint", "right_inner_knuckle_joint", "right_inner_finger_joint"};
+    pub_joint_state.position = {-3.14, -0.06, -2.99, 0.75, -0.49, 1.15, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
     ConstrainedManipulability robot_polytope(nh, root, tip);
 
@@ -163,7 +168,7 @@ int main(int argc, char **argv)
     Eigen::VectorXd bhrep;
     Eigen::Vector3d offset_position;
     Eigen::Matrix<double, 6, Eigen::Dynamic> Jacobian;
-    std::vector<double> joint_deviation(6); // Resulting change in joint position
+    std::vector<double> joint_deviation(ndof); // Resulting change in joint position
 
     pub_joint_state.header.seq = 0;
     pub_joint_state.header.seq++;
@@ -205,6 +210,7 @@ int main(int argc, char **argv)
                                                                                  show_mp,
                                                                                  {0.0, 0.0, 0.5, 0.0},
                                                                                  {0.0, 0.0, 1.0, 0.4});
+
                 // Constrained polytope
                 double allowable_vol_constrained = robot_polytope.getConstrainedAllowableMotionPolytope(sample_joint_state,
                                                                                                         AHrep,
@@ -311,9 +317,10 @@ int main(int argc, char **argv)
 
                         Eigen::VectorXd twist_shifted_output = Jacobian_g * (dq_sol + shift_to_sampled_joint_state);
                         if (debug_statements)
+                        {
                             std::cout << "twist_shifted_output  " << twist_shifted_output << std::endl;
-                        if (debug_statements)
                             std::cout << "desired_twist_g value " << desired_twist_g << std::endl;
+                        }
 
                         Eigen::VectorXd vel_err = (twist_shifted_output - desired_twist_g);
                         double sum_squared_error = vel_err.dot(vel_err);
